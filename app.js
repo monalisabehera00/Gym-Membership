@@ -1,48 +1,41 @@
-const express=require("express");
-const path=require("path");
-const app=express();
-const fs=require("fs");
-const port=3000;
-//EXPRESS SPECIFIC STUFF
+const express = require("express");
+const path = require("path");
+const fs = require("fs");
+const app = express();
+const port = 3000;
 
-app.use('/static',express.static('static'))//serving static files
-app.use(express.urlencoded())
+// EXPRESS SPECIFIC STUFF
+app.use('/static', express.static('static')); // Serving static files
+app.use(express.urlencoded({ extended: true })); // Parsing URL-encoded data
 
-//PUG SPECIFIC STUFF
-app.set('view engine','pug')//set the template engine as pug
-app.set('views',path.join(__dirname,'views'))//set the views directory
-
-//END POINTS
-app.get('/',(req,res)=>{
-    const con ="this is the best content"
-    const params={'title':'pug is the best',content:con}
-res.status(200).render('index.pug',params)
+// ENDPOINTS
+app.get('/', (req, res) => {
+    // Send the HTML file directly
+    res.status(200).sendFile(path.join(__dirname, 'index.html'));
 });
 
-// app.post('/',(req,res)=>{
-//     console.log(req.body)
-//     const params={'title':'your form has been submited sucessfully '}
-//      res.status(200).render('index.pug',params);
-// })
+app.post('/', (req, res) => {
+    // Extract form data
+    const { name, age, gender, address, more } = req.body;
 
-app.post('/',(req,res)=>{
-    name=req.body.name
-    age=req.body.age
-    gender=req.body.gender
-    address=req.body.address
-    more=req.body.more
-    let outputToWrite=`the name of the client is${name},${age}years old,${gender},residing at ${address},more about him/her:${more}`
-    fs.writeFileSync('output.txt',outputToWrite)
+    // Create a summary of the submitted form data
+    const outputToWrite = `
+        The name of the client is ${name}, ${age} years old, ${gender}, 
+        residing at ${address}. More about them: ${more}.
+    `;
 
-    const params={'title':'your form has been submited sucessfully '}
-res.status(200).render('index.pug',params);
+    // Save the summary to an output file
+    fs.writeFileSync('output.txt', outputToWrite);
+
+    // Send a success message
+    res.status(200).send(`
+        <h1>Your form has been submitted successfully</h1>
+        <p>${outputToWrite}</p>
+        <a href="/">Go back to the form</a>
+    `);
 });
 
-
-
-
-
-//START THE SERVER
-app.listen(port,()=>{
-    console.log(`this application started sucessfully on port ${port}`)
-})
+// START THE SERVER
+app.listen(port, () => {
+    console.log(`This application started successfully on port ${port}`);
+});
