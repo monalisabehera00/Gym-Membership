@@ -1,4 +1,4 @@
-# Gym Membership Form with Express and Pug
+# Gym Membership Form with Express and node
 
 This is a simple web application built using Node.js, Express, and Pug. The application displays a form where users can fill in their details to get a gym membership. The submitted data is then saved to a text file.
 
